@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Malaria Test Webapp</title>
+
+    <!-- jQuery CDN -->
+    <script
+    src="http://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+
+    <!-- Sweet Alert -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+  </head>
+  <body>
+    <form method="post" enctype="multipart/form-data" id="formid">
+      <input type="file" accept="image/*" name="image" id="image">
+      <button type="button" id="submit">Submit</button>
+    </form>
+
+    <p>
+      <img src="" id="im" style="width: 500px; height: 300px;">
+    </p>
+
+    <script type="text/javascript">
+      $("#submit").click(function() {
+        window.swal({
+          title: "Processing...",
+          text: "Please wait"
+        });
+        var formData = new FormData($("#formid")[0]);
+        $.ajax({
+          url: "/predict",
+          type: "post",
+          dataType: "json",
+          processData: false,
+          contentType: false,
+          async: false,
+          data: formData,
+          success: function(result) {
+            swal.close();
+            var icon = "error";
+            console.log(result.im);
+            $("#im").attr('src', result.im);
+            if(result.prediction == "Uninfected") {
+              icon = "success";
+            }
+            window.swal({
+              title: "Result",
+              text: "Result = " + result.prediction,
+              icon: icon
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
